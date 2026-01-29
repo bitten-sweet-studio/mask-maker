@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ShapeDraw : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class ShapeDraw : MonoBehaviour
     [Header("Tool State")]
     [SerializeField] private bool isDrawingEnabled = true;
 
+    public UnityEvent onDrawing;
+    public UnityEvent onStopDrawing;
     private PaperSurface activePaperSurface;
 
     private Vector3 previousMousePosition;
@@ -41,7 +44,7 @@ public class ShapeDraw : MonoBehaviour
             return;
         }
         
-        if(Input.GetKey(KeyCode.Escape)) StopDrawing();
+        if(Input.GetKey(KeyCode.T)) StopDrawing();
 
         Vector3 currentMousePosition = Input.mousePosition;
 
@@ -138,12 +141,14 @@ public class ShapeDraw : MonoBehaviour
     public void StartDrawing()
     {
         isDrawingEnabled = true;
+        onDrawing.Invoke();
     }
 
     public void StopDrawing()
     {
         isDrawingEnabled = false;
         hasPreviousMousePosition = false; // evita linha fantasma ao voltar
+        onStopDrawing.Invoke();
     }
 
     public void ToggleDrawing()

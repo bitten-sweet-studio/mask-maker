@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab8d3bab3e7b5f342bb0dd3be18211c9, type: 3}
   m_Name: CursorProfile_Drawing
   m_EditorClassIdentifier: 
-  id: Default
-  texture: {fileID: 0}
-  hotspot: {x: 0, y: 0}
+  id: Drawing
+  texture: {fileID: 2800000, guid: e0c07e463e3b29d4eb79fc484cb098d3, type: 3}
+  hotspot: {x: 0.15, y: 0.15}
   cursorMode: 0
-  hotspotNormalized: 0
+  hotspotNormalized: 1

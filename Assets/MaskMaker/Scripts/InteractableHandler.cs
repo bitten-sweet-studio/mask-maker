@@ -1,7 +1,13 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class InteractableHandler : MonoBehaviour
 {
+    [Header("Enable")]
+    [SerializeField] private bool startEnabled = true;
+    public bool IsEnabled => _enabled;
+    private bool _enabled;
+
     [Header("Refs")]
     [SerializeField] private Camera cam;
 
@@ -16,25 +22,25 @@ public class InteractableHandler : MonoBehaviour
     [SerializeField] private float dragStartPixelDistance = 8f;
     [SerializeField] private float dragStartHoldTime = 0.12f;
 
-    [Header("Spring Joint Drag")]
-    [SerializeField] private float spring = 1200f;
-    [SerializeField] private float damper = 80f;
-    [SerializeField] private float massScale = 1f;
-    [SerializeField] private float maxDistanceJoint = 0f;     // 0 = “ponto preso”
-    [SerializeField] private float minDistanceJoint = 0f;
+    [Header("Drag Movement")]
+    [Tooltip("Mantém a mesma profundidade do clique (bom pra plano da câmera).")]
+    [SerializeField] private bool useFixedDepth = true;
 
-    [Header("Drag Depth / Plane")]
-    [SerializeField] private bool useFixedDepth = true;       // true = mantém profundidade do clique
     [SerializeField] private float dragMaxDepth = 50f;
 
-    [Header("Drag Extras")]
-    [SerializeField] private bool freezeRotationWhileDragging = true;
+    [Tooltip("Levanta o ponto do target pra não raspar na mesa.")]
+    [SerializeField] private float hoverLift = 0.08f;
 
-    [Header("Lift")]
-    [SerializeField] private float hoverLift = 0.08f; // 8 cm
-    [SerializeField] private bool liftAlongCameraUp = false; // se true, usa up da camera
+    [Tooltip("Se true, levanta na normal da superfície clicada (ótimo pra mesa inclinada).")]
+    [SerializeField] private bool liftAlongHitNormal = true;
+
+    [Header("Drag Stability")]
+    [SerializeField] private bool freezeRotationWhileDragging = true;
+    [SerializeField] private float maxDragSpeed = 30f; // limita teleporte em FPS baixo
 
     private Interactable _currentHover;
+    public UnityEvent onLift;
+    public UnityEvent onDrop;
 
     // Press state
     private Interactable _pressed;
@@ -45,43 +51,44 @@ public class InteractableHandler : MonoBehaviour
     // Drag state
     private bool _isDragging;
     private float _dragDepth;
-    private Vector3 _localGrabOffset;        // offset no espaço do rb (pra prender no ponto clicado)
+    private Vector3 _grabOffsetWorld;     // mantém o ponto clicado no mouse
+    private Vector3 _hitNormal;
     private RigidbodyConstraints _originalConstraints;
-
-    // Dragger / Joint
-    private GameObject _draggerGO;
-    private Rigidbody _draggerRb;
-    private SpringJoint _springJoint;
-    private Vector3 _grabNormal;
 
     private void Awake()
     {
         if (!cam) cam = Camera.main;
-        EnsureDragger();
+        SetEnabled(startEnabled);
+    }
+
+    public void SetEnabled(bool value)
+    {
+        if (_enabled == value) return;
+        _enabled = value;
+
+        if (!_enabled)
+        {
+            ClearHover();
+            CancelPressAndDrag();
+        }
     }
 
     private void Update()
     {
+        if (!_enabled) return;
+
         UpdateHover();
 
         if (Input.GetMouseButtonDown(0)) BeginPress();
         if (Input.GetMouseButton(0)) UpdatePressAndMaybeDrag();
         if (Input.GetMouseButtonUp(0)) EndPress();
-
-        if (_isDragging) UpdateDraggerTarget();
     }
 
-    private void EnsureDragger()
+    private void FixedUpdate()
     {
-        if (_draggerGO != null) return;
-
-        _draggerGO = new GameObject("[JointDragger]");
-        _draggerGO.hideFlags = HideFlags.HideInHierarchy;
-
-        _draggerRb = _draggerGO.AddComponent<Rigidbody>();
-        _draggerRb.isKinematic = true;
-        _draggerRb.useGravity = false;
-        _draggerRb.interpolation = RigidbodyInterpolation.Interpolate;
+        if (!_enabled) return;
+        if (_isDragging && _pressedRb != null)
+            DragMove();
     }
 
     private void UpdateHover()
@@ -105,17 +112,14 @@ public class InteractableHandler : MonoBehaviour
             _currentHover.SetHighlighted(true, hoverOverlayMaterial);
     }
 
-    
     private void BeginPress()
     {
         _mouseDownPos = Input.mousePosition;
         _mouseDownTime = Time.time;
-        
 
         var ray = cam.ScreenPointToRay(Input.mousePosition);
         if (!Physics.Raycast(ray, out var hit, maxDistance, interactableMask, QueryTriggerInteraction.Ignore))
         {
-            _grabNormal = hit.normal;
             _pressed = null;
             _pressedRb = null;
             return;
@@ -127,14 +131,15 @@ public class InteractableHandler : MonoBehaviour
         _pressedRb = _pressed.GetComponentInParent<Rigidbody>();
         if (_pressedRb == null) return;
 
-        // Profundidade pra manter a “camada” do clique (opcional)
+        _originalConstraints = _pressedRb.constraints;
+
+        // Profundidade do ponto clicado (mantém “na mesma camada”)
         _dragDepth = Vector3.Distance(cam.transform.position, hit.point);
 
-        // Offset do ponto clicado: prende no ponto real do collider (melhor feeling)
-        // Armazenamos em local space pra ser estável enquanto roda.
-        _localGrabOffset = _pressedRb.transform.InverseTransformPoint(hit.point);
+        // Offset pra manter exatamente o ponto clicado sob o mouse
+        _grabOffsetWorld = _pressedRb.position - hit.point;
 
-        _originalConstraints = _pressedRb.constraints;
+        _hitNormal = hit.normal;
     }
 
     private void UpdatePressAndMaybeDrag()
@@ -149,7 +154,6 @@ public class InteractableHandler : MonoBehaviour
             StartDragging();
     }
 
-    
     private void StartDragging()
     {
         _isDragging = true;
@@ -157,42 +161,38 @@ public class InteractableHandler : MonoBehaviour
         if (freezeRotationWhileDragging)
             _pressedRb.constraints = _originalConstraints | RigidbodyConstraints.FreezeRotation;
 
-        // Posiciona dragger no ponto inicial “grab”
-        Vector3 grabWorld = _pressedRb.transform.TransformPoint(_localGrabOffset);
-        _draggerRb.position = grabWorld;
-
-        // Cria joint no dragger (não no objeto)
-        _springJoint = _draggerGO.AddComponent<SpringJoint>();
-        _springJoint.autoConfigureConnectedAnchor = false;
-
-        _springJoint.connectedBody = _pressedRb;
-
-        // Anchor do joint no dragger = centro do dragger (0)
-        _springJoint.anchor = Vector3.zero;
-
-        // ConnectedAnchor = ponto local do rb que foi clicado (prende no “ponto pegado”)
-        _springJoint.connectedAnchor = _localGrabOffset;
-
-        _springJoint.spring = spring;
-        _springJoint.damper = damper;
-        _springJoint.massScale = massScale;
-
-        _springJoint.maxDistance = maxDistanceJoint;
-        _springJoint.minDistance = minDistanceJoint;
+        // opcional, mas geralmente ajuda no “feeling”
+        _pressedRb.interpolation = RigidbodyInterpolation.Interpolate;
+        _pressedRb.useGravity = false;
+        // se atravessar coisas, considere setar Continuous no inspector
+        onLift.Invoke();
     }
 
-    private void UpdateDraggerTarget()
+    private void DragMove()
     {
         var ray = cam.ScreenPointToRay(Input.mousePosition);
 
-        float depth = useFixedDepth ? Mathf.Clamp(_dragDepth, 0.05f, dragMaxDepth) : Mathf.Min(dragMaxDepth, maxDistance);
-        Vector3 target = ray.GetPoint(depth);
-        target += _grabNormal * hoverLift;
+        float depth = useFixedDepth ? Mathf.Clamp(_dragDepth, 0.05f, dragMaxDepth)
+                                    : Mathf.Min(dragMaxDepth, maxDistance);
 
-        Vector3 upDir = liftAlongCameraUp ? cam.transform.up : Vector3.up;
-        target += upDir * hoverLift;
+        Vector3 targetPoint = ray.GetPoint(depth);
 
-        _draggerRb.MovePosition(target);
+        // Lift pra não raspar
+        Vector3 liftDir = (liftAlongHitNormal ? _hitNormal : Vector3.up);
+        targetPoint += liftDir * hoverLift;
+
+        // Mantém o ponto clicado sob o mouse
+        Vector3 targetPos = targetPoint + _grabOffsetWorld;
+
+        // Limita velocidade pra evitar “teleporte”/instabilidade
+        Vector3 current = _pressedRb.position;
+        Vector3 desiredDelta = targetPos - current;
+
+        float maxStep = maxDragSpeed * Time.fixedDeltaTime;
+        if (desiredDelta.magnitude > maxStep)
+            targetPos = current + desiredDelta.normalized * maxStep;
+
+        _pressedRb.MovePosition(targetPos);
     }
 
     private void EndPress()
@@ -217,12 +217,27 @@ public class InteractableHandler : MonoBehaviour
         _isDragging = false;
 
         if (_pressedRb != null)
-            _pressedRb.constraints = _originalConstraints;
-
-        if (_springJoint != null)
         {
-            Destroy(_springJoint);
-            _springJoint = null;
+            _pressedRb.constraints = _originalConstraints;
+            _pressedRb.useGravity = true;
         }
+            
+        onLift.Invoke();
+    }
+
+    private void ClearHover()
+    {
+        if (_currentHover != null)
+        {
+            _currentHover.SetHighlighted(false, hoverOverlayMaterial);
+            _currentHover = null;
+        }
+    }
+
+    private void CancelPressAndDrag()
+    {
+        if (_isDragging) StopDragging();
+        _pressed = null;
+        _pressedRb = null;
     }
 }

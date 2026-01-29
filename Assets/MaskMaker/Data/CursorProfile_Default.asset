@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CursorProfile_Default
   m_EditorClassIdentifier: 
   id: Default
-  texture: {fileID: 0}
-  hotspot: {x: 0, y: 0}
+  texture: {fileID: 2800000, guid: d433eb86c5d609c41b291427b1d8a547, type: 3}
+  hotspot: {x: 0.15, y: 0.15}
   cursorMode: 0
-  hotspotNormalized: 0
+  hotspotNormalized: 1
