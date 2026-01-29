@@ -5,28 +5,21 @@ public class ShapeDraw : MonoBehaviour
     [Header("Scene References")]
     [SerializeField] private Camera sceneCamera;
 
-    [Header("Textures")]
-    [SerializeField] private Texture2D baseMaskTexture;
+    [Header("Brush")]
     [SerializeField] private Texture2D brushTexture;
-
-    [Header("Shader Settings")]
-    [SerializeField] private string maskTexturePropertyName = "_MaskTex";
-
-    [Header("Brush Settings")]
     [SerializeField] private int brushRadiusInPixels = 24;
     [SerializeField, Range(0f, 1f)] private float brushStrength = 1f;
 
     [Header("Raycast")]
     [SerializeField] private LayerMask paintableLayers = ~0;
 
-    [Header("Paint Mode (read-only in Inspector)")]
+    [Header("Paint Mode")]
     [SerializeField] private Color currentPaintColor = Color.white;
 
-    private Texture2D runtimeMaskTexture;
-    private MaterialPropertyBlock materialPropertyBlock;
+    [Header("Tool State")]
+    [SerializeField] private bool isDrawingEnabled = true;
 
-    private Renderer cachedHitRenderer;
-    private Collider cachedHitCollider;
+    private PaperSurface activePaperSurface;
 
     private Vector3 previousMousePosition;
     private bool hasPreviousMousePosition;
@@ -35,22 +28,20 @@ public class ShapeDraw : MonoBehaviour
     {
         if (sceneCamera == null)
             sceneCamera = Camera.main;
-
-        materialPropertyBlock = new MaterialPropertyBlock();
-    }
-
-    private void Start()
-    {
-        CreateRuntimeMaskTexture();
     }
 
     private void Update()
     {
+        if (!isDrawingEnabled)
+            return;
+        
         if (!Input.GetMouseButton(0))
         {
             hasPreviousMousePosition = false;
             return;
         }
+        
+        if(Input.GetKey(KeyCode.Escape)) StopDrawing();
 
         Vector3 currentMousePosition = Input.mousePosition;
 
@@ -63,60 +54,49 @@ public class ShapeDraw : MonoBehaviour
         if (!TryGetRaycastHit(currentMousePosition, out RaycastHit raycastHit))
             return;
 
-        CacheRendererFromHit(raycastHit);
+        // ✅ Aqui é a parte que normalmente quebra (collider em child etc)
+        PaperSurface hitPaperSurface =
+            raycastHit.collider.GetComponent<PaperSurface>() ??
+            raycastHit.collider.GetComponentInParent<PaperSurface>() ??
+            raycastHit.collider.GetComponentInChildren<PaperSurface>();
 
-        if (cachedHitRenderer == null)
+        if (hitPaperSurface == null)
+        {
+            Debug.LogWarning($"Raycast acertou '{raycastHit.collider.name}', mas não achei PaperSurface nele/pai/filhos.", raycastHit.collider);
             return;
+        }
 
-        PaintAtHitPoint(raycastHit);
-        ApplyMaskTextureToCachedRenderer();
+        if (hitPaperSurface != activePaperSurface)
+        {
+            activePaperSurface = hitPaperSurface;
+            activePaperSurface.CreateRuntimeMaskIfNeeded();
+            activePaperSurface.ApplyRuntimeMaskToRenderer();
+            Debug.Log($"Paper ativo: {activePaperSurface.name}", activePaperSurface);
+        }
+
+        PaintAtHitPoint(activePaperSurface.RuntimeMaskTexture, raycastHit.textureCoord);
+        activePaperSurface.ApplyRuntimeMaskToRenderer();
     }
 
-    // --- Public API (Buttons) ---
-
-    public void SetDrawing()
-    {
-        currentPaintColor = Color.white;
-    }
-
-    public void SetErasing()
-    {
-        currentPaintColor = Color.black;
-    }
-
-    // --- Internal ---
-
-    private void CreateRuntimeMaskTexture()
-    {
-        runtimeMaskTexture = new Texture2D(
-            baseMaskTexture.width,
-            baseMaskTexture.height,
-            TextureFormat.RGBA32,
-            false
-        );
-
-        runtimeMaskTexture.SetPixels(baseMaskTexture.GetPixels());
-        runtimeMaskTexture.Apply();
-    }
+    // Buttons
+    public void SetDrawing() => currentPaintColor = Color.white;
+    public void SetErasing() => currentPaintColor = Color.black;
 
     private bool TryGetRaycastHit(Vector3 mouseScreenPosition, out RaycastHit raycastHit)
     {
         Ray ray = sceneCamera.ScreenPointToRay(mouseScreenPosition);
-        return Physics.Raycast(ray, out raycastHit, Mathf.Infinity, paintableLayers, QueryTriggerInteraction.Ignore);
+        bool hit = Physics.Raycast(ray, out raycastHit, Mathf.Infinity, paintableLayers, QueryTriggerInteraction.Ignore);
+
+        // Debug útil pra confirmar que está acertando o papel certo
+        if (!hit) return false;
+
+        return true;
     }
 
-    private void CacheRendererFromHit(RaycastHit raycastHit)
+    private void PaintAtHitPoint(Texture2D runtimeMaskTexture, Vector2 hitTextureCoordinates)
     {
-        if (raycastHit.collider == cachedHitCollider && cachedHitRenderer != null)
-            return;
-
-        cachedHitCollider = raycastHit.collider;
-        cachedHitRenderer = cachedHitCollider.GetComponent<Renderer>();
-    }
-
-    private void PaintAtHitPoint(RaycastHit raycastHit)
-    {
-        Vector2 hitTextureCoordinates = raycastHit.textureCoord;
+        if (runtimeMaskTexture == null) return;
+        if (brushTexture == null) return;
 
         int hitPixelX = Mathf.FloorToInt(hitTextureCoordinates.x * runtimeMaskTexture.width);
         int hitPixelY = Mathf.FloorToInt(hitTextureCoordinates.y * runtimeMaskTexture.height);
@@ -133,7 +113,8 @@ public class ShapeDraw : MonoBehaviour
                 int targetPixelX = paintStartPixelX + brushPixelOffsetX;
                 int targetPixelY = paintStartPixelY + brushPixelOffsetY;
 
-                if (!IsInsideTextureBounds(runtimeMaskTexture, targetPixelX, targetPixelY))
+                if (targetPixelX < 0 || targetPixelX >= runtimeMaskTexture.width ||
+                    targetPixelY < 0 || targetPixelY >= runtimeMaskTexture.height)
                     continue;
 
                 float brushSampleU = brushPixelOffsetX / (float)(brushDiameterInPixels - 1);
@@ -154,16 +135,22 @@ public class ShapeDraw : MonoBehaviour
 
         runtimeMaskTexture.Apply();
     }
-
-    private void ApplyMaskTextureToCachedRenderer()
+    public void StartDrawing()
     {
-        cachedHitRenderer.GetPropertyBlock(materialPropertyBlock);
-        materialPropertyBlock.SetTexture(maskTexturePropertyName, runtimeMaskTexture);
-        cachedHitRenderer.SetPropertyBlock(materialPropertyBlock);
+        isDrawingEnabled = true;
     }
 
-    private bool IsInsideTextureBounds(Texture2D texture, int pixelX, int pixelY)
+    public void StopDrawing()
     {
-        return pixelX >= 0 && pixelX < texture.width && pixelY >= 0 && pixelY < texture.height;
+        isDrawingEnabled = false;
+        hasPreviousMousePosition = false; // evita linha fantasma ao voltar
+    }
+
+    public void ToggleDrawing()
+    {
+        isDrawingEnabled = !isDrawingEnabled;
+
+        if (!isDrawingEnabled)
+            hasPreviousMousePosition = false;
     }
 }
