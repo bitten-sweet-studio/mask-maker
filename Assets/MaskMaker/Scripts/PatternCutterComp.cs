@@ -40,13 +40,13 @@ public class PatternCutterComp : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == patternPlane.gameObject)
+        if (Physics.Raycast(ray, out hit) &&
+            hit.collider.gameObject == patternPlane.gameObject)
         {
-            // Only add point if we've moved enough
             if (_worldCutPoints.Count > 0)
             {
                 float distance = Vector3.Distance(hit.point, _worldCutPoints[_worldCutPoints.Count - 1]);
-                if (distance < 0.05f) return; // Adjust threshold as needed
+                if (distance < 0.05f) return;
             }
 
             _worldCutPoints.Add(hit.point);
@@ -63,7 +63,6 @@ public class PatternCutterComp : MonoBehaviour
             return;
         }
 
-        // Close the loop
         if (Vector3.Distance(_worldCutPoints[0], _worldCutPoints[_worldCutPoints.Count - 1]) > 0.1f)
         {
             _worldCutPoints.Add(_worldCutPoints[0]);
@@ -73,9 +72,17 @@ public class PatternCutterComp : MonoBehaviour
         ResetCut();
     }
 
+    private int GetPatternPieceMeshVertexCount()
+    {
+        int extraSlotForCenterVertex = 1;
+        return _worldCutPoints.Count + extraSlotForCenterVertex;
+    }
+
     private void ExtractPatternPiece()
     {
-        Vector3[] localVertices = new Vector3[_worldCutPoints.Count];
+        Vector3[] localVertices = new Vector3[GetPatternPieceMeshVertexCount()];
+        int lastVertexIndex = localVertices.Length - 1;
+
         for (int i = 0; i < _worldCutPoints.Count; i++)
         {
             Vector3 localVertex = patternPlane.transform.InverseTransformPoint(_worldCutPoints[i]);
@@ -89,6 +96,8 @@ public class PatternCutterComp : MonoBehaviour
         }
         localMeshCenter /= localVertices.Length;
 
+        localVertices[lastVertexIndex] = localMeshCenter;
+
         for (int i = 0; i < localVertices.Length; i++)
         {
             localVertices[i] = localVertices[i] - localMeshCenter;
@@ -96,9 +105,9 @@ public class PatternCutterComp : MonoBehaviour
 
         int[] triangles = new int[(localVertices.Length - 2) * 3];
         int triangleIndex = 0;
-        for (int i = 1; i < localVertices.Length - 1; i++)
+        for (int i = 0; i < localVertices.Length - 2; i++)
         {
-            triangles[triangleIndex++] = 0;
+            triangles[triangleIndex++] = lastVertexIndex;
             triangles[triangleIndex++] = i;
             triangles[triangleIndex++] = i + 1;
         }
@@ -119,7 +128,7 @@ public class PatternCutterComp : MonoBehaviour
 
         Vector3 worldCenter = patternPlane.transform.TransformPoint(localMeshCenter);
         GameObject piece = new GameObject("PatternPiece");
-        piece.transform.position = worldCenter;
+        piece.transform.position = worldCenter + patternPlane.transform.up * 0.25f;
         piece.transform.rotation = patternPlane.transform.rotation;
         piece.transform.localScale = patternPlane.transform.localScale;
 
