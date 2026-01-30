@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class DraggableComp : MonoBehaviour
 {
     [SerializeField] private float hoverHeight = 0.1f;

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class RotatableComp : MonoBehaviour
 {
     [SerializeField] private float rotationSpeed = 2f;

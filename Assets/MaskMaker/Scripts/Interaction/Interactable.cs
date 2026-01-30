@@ -1,44 +1,59 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using SaintsField;
 
 [DisallowMultipleComponent]
 public class Interactable : MonoBehaviour
 {
-    [Header("Renderers (opcional)")]
-    [Tooltip("Se vazio, pega todos os Renderers nos filhos.")]
-    [SerializeField] private Renderer[] renderers;
+    [SerializeField]
+    private Material _overlayMaterial;
 
-    [Header("Eventos")]
+    [Header("")]
+    [Header("Events")]
     public UnityEvent onClick;
 
-    // Cache das listas originais pra restaurar sem erro.
+    [Header("Debug")]
+    [ReadOnly, SerializeField] private Renderer[] renderers;
+
     private readonly Dictionary<Renderer, Material[]> _originalMats = new();
     private bool _isHighlighted;
 
     private void Awake()
     {
         if (renderers == null || renderers.Length == 0)
+        {
             renderers = GetComponentsInChildren<Renderer>(includeInactive: false);
+        }
 
-        // Cache do estado original
+
         foreach (var r in renderers)
         {
             if (!r) continue;
+
             _originalMats[r] = r.sharedMaterials; // sharedMaterials pra evitar instanciar sem necessidade
         }
     }
 
-    public void SetHighlighted(bool value, Material overlayMat)
+    private void OnMouseEnter()
     {
-        if (_isHighlighted == value) return;
-        _isHighlighted = value;
-
-        if (value) ApplyOverlay(overlayMat);
-        else RestoreOriginal();
+        ApplyOverlay(_overlayMaterial);
     }
 
-    public void Click()
+    private void OnMouseUpAsButton()
+    {
+        if (Input.GetMouseButtonUp(0))
+        {
+            Click();
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        RestoreOriginal();
+    }
+
+    private void Click()
     {
         onClick?.Invoke();
     }

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class ScalableComp : MonoBehaviour
 {
     [SerializeField] private float scaleSpeed = 0.5f;
