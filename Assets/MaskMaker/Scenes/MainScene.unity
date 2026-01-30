@@ -1813,19 +1813,7 @@ MonoBehaviour:
   _doorOpenTweenDuration: 2
   _doorOpenedUnityEvent:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 11400000, guid: 168dfd3ef78efd6d0af33ffb41245432, type: 2}
-        m_TargetAssemblyTypeName: QuickSoundAsset, Assembly-CSharp
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &1005363459
 GameObject:
   m_ObjectHideFlags: 0
@@ -2791,6 +2779,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -178.318
       objectReference: {fileID: 0}
+    - target: {fileID: 3339779816295224627, guid: 1d66155e4d83b8c408d05d011fa7a037, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 9a8e8dd6ceb5ec94986b58dceff78ffe, type: 2}
     - target: {fileID: 7044086133495491852, guid: 1d66155e4d83b8c408d05d011fa7a037, type: 3}
       propertyPath: m_Name
       value: sm_Mask_Fox
@@ -2798,13 +2790,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7044086133495491852, guid: 1d66155e4d83b8c408d05d011fa7a037, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1534403459}
   m_SourcePrefab: {fileID: 100100000, guid: 1d66155e4d83b8c408d05d011fa7a037, type: 3}
 --- !u!4 &1534403457 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2327094178116681242, guid: 1d66155e4d83b8c408d05d011fa7a037, type: 3}
   m_PrefabInstance: {fileID: 1534403456}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1534403458 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7044086133495491852, guid: 1d66155e4d83b8c408d05d011fa7a037, type: 3}
+  m_PrefabInstance: {fileID: 1534403456}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1534403459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534403458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8311913e55b9fad888f266816d141534, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hoverHeight: 0.1
+  _smoothSpeed: 10
+  isDragging: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  offset: {x: 0, y: 0, z: 0}
 --- !u!1 &1623473632
 GameObject:
   m_ObjectHideFlags: 0

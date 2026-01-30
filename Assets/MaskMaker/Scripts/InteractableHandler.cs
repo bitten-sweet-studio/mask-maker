@@ -221,7 +221,7 @@ public class InteractableHandler : MonoBehaviour
             _pressedRb.constraints = _originalConstraints;
             _pressedRb.useGravity = true;
         }
-            
+
         onLift.Invoke();
     }
 
