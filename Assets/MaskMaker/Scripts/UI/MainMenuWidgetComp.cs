@@ -8,8 +8,10 @@ public class MainMenuWidgetComp : MonoBehaviour
 
     public event Action Opened;
     public event Action GameContinued;
+    public event Action GameStarted;
 
     private CanvasGroup _rootCanvasGroup;
+    private bool _hasGameStarted;
 
     private void Awake()
     {
@@ -35,6 +37,12 @@ public class MainMenuWidgetComp : MonoBehaviour
     public void ContinueGame()
     {
         _rootCanvasGroup.DisableWidgetTween();
+
+        if (!_hasGameStarted)
+        {
+            GameStarted?.Invoke();
+            _hasGameStarted = true;
+        }
         GameContinued?.Invoke();
     }
 
