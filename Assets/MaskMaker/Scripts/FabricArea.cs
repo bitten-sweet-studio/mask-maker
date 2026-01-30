@@ -25,3 +25,5 @@ public class FabricArea : MonoBehaviour
         paper.SetOnFabric(false);
     }
 }
+
+

@@ -35,6 +35,12 @@ public class ShapeDraw : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            Debug.Log("CancelDrawing");
+            StopDrawing();
+        }
+        
         if (!isDrawingEnabled)
             return;
         
@@ -43,8 +49,6 @@ public class ShapeDraw : MonoBehaviour
             hasPreviousMousePosition = false;
             return;
         }
-        
-        if(Input.GetKey(KeyCode.T)) StopDrawing();
 
         Vector3 currentMousePosition = Input.mousePosition;
 
