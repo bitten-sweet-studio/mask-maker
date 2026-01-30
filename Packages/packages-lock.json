@@ -7,6 +7,15 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.manefunction.dotween-ui-controller": {
+      "version": "https://github.com/ManeFunction/DOTween-UI-controller.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "hash": "6ddaeaedeb49bd2b1995d4b05809f85933db5938"
+    },
     "com.unity.2d.animation": {
       "version": "10.2.2",
       "depth": 1,

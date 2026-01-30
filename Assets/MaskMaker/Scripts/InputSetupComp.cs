@@ -12,12 +12,19 @@ public class InputSetupComp : MonoBehaviour
 
         _mainMenuWidget.Opened += OnGamePaused;
         _mainMenuWidget.GameContinued += OnGameContinued;
+        InputSystem.actions.FindAction("OpenMenu").performed += HandleOpenMenu;
     }
 
     private void Destroy()
     {
         _mainMenuWidget.Opened -= OnGamePaused;
         _mainMenuWidget.GameContinued -= OnGameContinued;
+        InputSystem.actions.FindAction("OpenMenu").performed -= HandleOpenMenu;
+    }
+
+    private void HandleOpenMenu(InputAction.CallbackContext context)
+    {
+        _mainMenuWidget.Open();
     }
 
     private void OnGamePaused()
