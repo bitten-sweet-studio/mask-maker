@@ -49,27 +49,6 @@ public class DraggableComp : MonoBehaviour
         _isUsingTemplate = _cachedTemplate != null;
     }
 
-    private void FixedUpdate()
-    {
-        if (!isDragging) return;
-
-        Vector3 mouseWorldPos = GetMouseWorldPosition();
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, NonInteractibleLayer))
-        {
-            Vector3 targetPos = hit.point + (hit.normal * HoverHeight) + dragOffset;
-            Vector3 forceDirection = targetPos - rb.position;
-            rb.AddForce(forceDirection * DragForce - rb.linearVelocity * DragDamping);
-        }
-        else
-        {
-            Vector3 targetPos = mouseWorldPos + dragOffset;
-            Vector3 forceDirection = targetPos - rb.position;
-            rb.AddForce(forceDirection * DragForce - rb.linearVelocity * DragDamping);
-        }
-    }
-
     private void OnMouseDown()
     {
         StartDragging();
@@ -95,9 +74,37 @@ public class DraggableComp : MonoBehaviour
         }
     }
 
-    private void StopDragging()
+    public void StopDragging()
     {
         isDragging = false;
+    }
+
+    private void FixedUpdate()
+    {
+        if (!isDragging) return;
+
+        Vector3 targetPos = GetMouseWorldPosition() + dragOffset;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, NonInteractibleLayer))
+        {
+            targetPos = hit.point + (hit.normal * HoverHeight) + dragOffset;
+        }
+
+        MoveToTarget(targetPos);
+    }
+
+    private void MoveToTarget(Vector3 targetPosition)
+    {
+        if (rb.isKinematic)
+        {
+            rb.MovePosition(targetPosition);
+        }
+        else
+        {
+            Vector3 force = (targetPosition - rb.position) * DragForce - rb.linearVelocity * DragDamping;
+            rb.AddForce(force);
+        }
     }
 
     private Vector3 GetMouseWorldPosition()
