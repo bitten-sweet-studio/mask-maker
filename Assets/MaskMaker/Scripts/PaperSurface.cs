@@ -12,6 +12,10 @@ public class PaperSurface : MonoBehaviour
     private MaterialPropertyBlock materialPropertyBlock;
 
     public Texture2D RuntimeMaskTexture => runtimeMaskTexture;
+    
+    [Header("Fabric Interaction")]
+    [SerializeField] private string useCutoutPropertyName = "_UseCutout";
+    private bool isOnFabric = false;
 
     private void Awake()
     {
@@ -27,7 +31,6 @@ public class PaperSurface : MonoBehaviour
         CreateRuntimeMaskIfNeeded();
         ApplyRuntimeMaskToRenderer();
     }
-
 
     public void CreateRuntimeMaskIfNeeded()
     {
@@ -59,4 +62,11 @@ public class PaperSurface : MonoBehaviour
         materialPropertyBlock.SetTexture(maskTexturePropertyName, runtimeMaskTexture);
         cachedRenderer.SetPropertyBlock(materialPropertyBlock);
     }
+    public void SetOnFabric(bool value)
+    {
+        isOnFabric = value;
+
+        cachedRenderer.material.SetFloat(useCutoutPropertyName, isOnFabric ? 1f : 0f);
+    }
+
 }
