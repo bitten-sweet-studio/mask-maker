@@ -1,7 +1,9 @@
 using SaintsField;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "QuickSoundAsset", menuName = "Mask Maker/Quick Sound")]
+[CreateAssetMenu(
+        fileName = "QuickSoundAsset",
+        menuName = MaskMakerStatics.ScriptableObjectMenuName + "/Quick Sound")]
 public class QuickSoundAsset : ScriptableObject
 {
     [SerializeField]

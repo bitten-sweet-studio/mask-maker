@@ -10,4 +10,8 @@ public class MaskComp : MonoBehaviour
     {
         TryGetComponent(out _interactable);
     }
+
+    private void Destroy()
+    {
+    }
 }
