@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ShopSystemComp : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class ShopSystemComp : MonoBehaviour
     [SerializeField] private GameObject _door;
     [SerializeField] private Vector3 _doorOpenTweenToRotation;
     [SerializeField] private float _doorOpenTweenDuration;
+    [SerializeField] private UnityEvent _doorOpenedUnityEvent;
 
     public event Action ShopOpened;
     public event Action GameStarted;
@@ -37,6 +39,7 @@ public class ShopSystemComp : MonoBehaviour
             .OnComplete(() =>
             {
                 ShopOpened?.Invoke();
+                _doorOpenedUnityEvent?.Invoke();
             });
     }
 }
