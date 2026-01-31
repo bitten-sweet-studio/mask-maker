@@ -2,85 +2,52 @@
 position: -334,-464
 ---
 MaskMaker: Ah! é você. 
-
 Saci: Mudou de lugar de novo... c ta fugindo de algo?
-
 MaskMaker: Achei que gostava de árvores
-
 Saci: Eu gosto, mas ...
-
 Saci: Tipo...
-
 Saci: É sempre um role achar seu lugar novo
-
 MaskMaker: Hoje ela resolveu parar aqui
-
 Saci: haha
-
 MaskMaker: Então rachou de novo?
-
 Saci: é...
-
 MaskMaker: ...
-
 Saci: que foi?
-
 MaskMaker: O que foi o que?
-
 Saci: Nada, nada...
-
 Saci: Tipo, sabe quando cê faz alguma coisa e fica pensando depois?
-
 MaskMaker: uhum... senta ai, vou dar uma olhada nisso
 ===
 title: SaciMaskPt1
 position: -341,-303
 ---
 MaskMaker: Acho que todo mundo
-
 Saci: o que?
-
 Saci: Ah é né...
-
 Saci: Oh! Não esquece de deixar do jeito que eu gosto ai
-
 MaskMaker: Não quer testar algo novo?
-
 Saci: é... talvez eu devesse mesmo
 ===
 title: SaciMaskPt2
 position: -340,-153
 ---
 Saci: É que tem um amigo de um amigo meu
-
 MaskMaker: hm...
-
 Saci: Ele tem um costume de não pensar muito
-
 MaskMaker: Acho que conheço alguém assim
-
 Saci: haha, mas tipo
-
 Saci: Esse amigo... acha que passou do ponto
-
 MaskMaker: Isso não costuma ser bom
-
 Saci: Mas tipo... todo mundo riu
-
 ===
 title: SaciMaskPt3
 position: -344,9
 ---
 MaskMaker: E foi uma boa piada?
-
 Saci: Sinceramente...
-
 MaskMaker: E seu amigo...
-
 MaskMaker: Não curtiu tanto assim.
-
 Saci: Não, definitivamente não.
-
 MaskMaker: Acho que acabei.
 ===
 title: SaciGoodReaction
@@ -88,9 +55,7 @@ position: -624,193
 color: green
 ---
 Saci: Você é o cara, c sabe né
-
 Saci: Diferente de alguém que conheço...
-
 MaskMaker: Que bom que gostou
 ===
 title: SaciNeutralReaction
@@ -98,9 +63,7 @@ position: -334,201
 color: blue
 ---
 Saci: legal
-
 MaskMaker: ...
-
 Saci: é... legal
 ===
 title: SaciBadReaction
@@ -108,27 +71,18 @@ position: -46,188
 color: red
 ---
 Saci: Você acordou bem hoje?
-
 MaskMaker: ...
-
 Saci: Vai ter que servir né
 ===
 title: SaciEnd
 position: -343,370
 ---
 Saci: Enfim...
-
 Saci: Eu tenho que resolver uma coisa
-
 Saci: meu amigo tem que resolver uma coisa
-
 MaskMaker: Se ele precisar de uma mascara
-
 Saci: É, pode deixar
-
 Saci: Eu falo com ele
-
 Saci: Até
-
 MaskMaker: Até...
 ===

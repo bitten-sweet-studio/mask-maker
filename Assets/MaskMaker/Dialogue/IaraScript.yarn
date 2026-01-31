@@ -1,0 +1,81 @@
+﻿title: IaraStart
+position: -260,-482
+---
+Iara: Olá.
+MaskMaker: Bem vinda!
+Iara: Você acha que consegue conserta-la?
+MaskMaker: Acho
+Iara: Preciso que faça
+MaskMaker: Ela parece quase vazia, quebrada a muito tempo?
+Iara: Sim, meu escultor estava ocupado e te recomendou
+MaskMaker: Ele sabe das coisas
+Iara: Vamos direto ao ponto
+Iara: A viagem até aqui já foi bem longa demais
+===
+title: IaraMaskPt1
+position: -263,-309
+---
+Iara: <i>*ring* não, eu não posso cantar na sua festa</i>
+Iara: <i>só arrume um palhaço ou ...</i>
+Iara: tch... sem noção
+MaskMaker: pff...
+Iara: Disse algo?
+MaskMaker: Pois não?
+Iara: Por favor não faça nada exagerado.
+MaskMaker: Claro
+===
+title: IaraMaskPt2
+position: -268,-146
+---
+MaskMaker: Então você canta.
+Iara: Não em festas infantis
+MaskMaker:Não é fã de crianças?
+Iara: Não é isso.
+Iara: Só não tem sentido
+MaskMaker: Sentido?
+Iara: É, perda de tempo.
+MaskMaker: ...
+===
+title: IaraMaskPt3
+position: -271,0
+---
+Iara: Não sou cruel
+MaskMaker: Realmente... já vi piores
+Iara: oi?
+MaskMaker: Você comentou algo sobre números
+Iara: Se não tem retorno, não tem porque fazer.
+MaskMaker: Entendi...
+MaskMaker: Eu gosto de fotografia
+Iara: como assim?
+MaskMaker: É divertido.
+Iara: ...
+===
+title: IaraGoodReaction
+position: -524,163
+---
+Iara: Realmente impressionante...
+Iara: E eficiente.
+MaskMaker: O prazer foi meu
+===
+title: IaraNeutralReaction
+position: -276,168
+---
+Iara: ...
+MaskMaker: Algum problema?
+Iara: Não
+===
+title: IaraBadReaction
+position: -38,166
+---
+Iara: Que grande perda de tempo.
+Iara: Pelo menos funciona
+MaskMaker: ...
+===
+title: IaraEnd
+position: -265,337
+---
+Iara: Com sua licença
+Iara: Preciso ir. 
+MaskMaker:Até mais.
+===
+ 
