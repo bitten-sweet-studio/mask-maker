@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 549c4300d1fd9bbf587c396c27eb6d0e, type: 3}
   m_Name: IS_DefaultGlobal
   m_EditorClassIdentifier: 
-  <HoverHeight>k__BackingField: 1
+  <HoverHeight>k__BackingField: 0.25
   <DragForce>k__BackingField: 100
   <DragDamping>k__BackingField: 10
   <NonInteractibleLayer>k__BackingField:

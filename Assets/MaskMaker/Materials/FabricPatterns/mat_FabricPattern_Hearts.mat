@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: mat_FabricPattern_Checkers
+  m_Name: mat_FabricPattern_Hearts
   m_Shader: {fileID: -6465566751694194690, guid: 4b97580f27251e0469d245267733631e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -65,8 +65,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainPattern:
-        m_Texture: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 6, y: 6}
+        m_Texture: {fileID: 2800000, guid: c84f07c310131c745bdb0854f1a48c5a, type: 3}
+        m_Scale: {x: 3, y: 3}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 577f929dde65ca345b5ea63126754bca, type: 3}
@@ -156,8 +156,8 @@ Material:
     - _BaseColor: {r: 0.5283019, g: 0.37691724, b: 0.27162692, a: 1}
     - _Color: {r: 0.5283019, g: 0.3769172, b: 0.2716269, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Primary_Color: {r: 0.29196337, g: 0.73267186, b: 0.764151, a: 0}
-    - _Secondary_Color: {r: 0.16941082, g: 0.40170482, b: 0.764151, a: 0}
+    - _Primary_Color: {r: 1, g: 0.85034406, b: 0.7783019, a: 0}
+    - _Secondary_Color: {r: 0.2024742, g: 0.6603774, b: 0.31551307, a: 0}
     - _Shadow_Tint: {r: 0.17517537, g: 0.05268779, b: 0.3018868, a: 0}
     - _Shadowline_Tint: {r: 0.45552254, g: 0, b: 1, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
