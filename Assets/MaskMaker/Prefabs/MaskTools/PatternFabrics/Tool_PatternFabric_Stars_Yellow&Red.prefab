@@ -52,8 +52,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4091380823884314940, guid: 224172c106bfb0d4ea2c6c981eb8235d, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: be6f7457f4ad774499ba3e6608753c5c, type: 2}
     - target: {fileID: 4943342992330173895, guid: 224172c106bfb0d4ea2c6c981eb8235d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: be6f7457f4ad774499ba3e6608753c5c, type: 2}
+    - target: {fileID: 6393747496432833166, guid: 224172c106bfb0d4ea2c6c981eb8235d, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: be6f7457f4ad774499ba3e6608753c5c, type: 2}
     - target: {fileID: 6993750934436042432, guid: 224172c106bfb0d4ea2c6c981eb8235d, type: 3}
@@ -66,7 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7724815063898868264, guid: 224172c106bfb0d4ea2c6c981eb8235d, type: 3}
       propertyPath: m_Name
-      value: Tool_PatternFabric (1) Variant
+      value: Tool_PatternFabric_Stars_Yellow&Red
       objectReference: {fileID: 0}
     - target: {fileID: 8464577157267846392, guid: 224172c106bfb0d4ea2c6c981eb8235d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
