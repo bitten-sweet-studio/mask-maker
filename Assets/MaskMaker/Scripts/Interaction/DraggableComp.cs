@@ -7,6 +7,7 @@ public class DraggableComp : InteractionBaseComp
     [SerializeField] private float hoverHeight = 0.1f;
     [SerializeField] private float dragForce = 100f;
     [SerializeField] private float dragDamping = 10f;
+    [SerializeField] private bool _shouldFreezeRotation = true;
     [SerializeField] private LayerMask _nonInteractibleLayer;
 
     private float HoverHeight => _isUsingTemplate
@@ -20,6 +21,10 @@ public class DraggableComp : InteractionBaseComp
     private float DragDamping => _isUsingTemplate
         ? _cachedTemplate.DragDamping
         : dragDamping;
+
+    private bool ShouldFreezeRotation => _isUsingTemplate
+        ? _cachedTemplate.ShouldFreezeRotation
+        : _shouldFreezeRotation;
 
     private LayerMask NonInteractibleLayer => _isUsingTemplate
         ? _cachedTemplate.NonInteractibleLayer
@@ -64,11 +69,22 @@ public class DraggableComp : InteractionBaseComp
         {
             dragOffset = Vector3.zero;
         }
+
+        if (ShouldFreezeRotation)
+        {
+            rb.freezeRotation = true;
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     public void StopDragging()
     {
         isDragging = false;
+
+        if (ShouldFreezeRotation)
+        {
+            rb.freezeRotation = false;
+        }
     }
 
     private void FixedUpdate()

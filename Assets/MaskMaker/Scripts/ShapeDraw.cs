@@ -23,7 +23,7 @@ public class ShapeDraw : MonoBehaviour
     [SerializeField] private UnityEvent onStopDrawing;
 
     [field: Header("Debug")]
-    [field: SaintsField.ReadOnly, SerializeField] public bool IsDrawingEnabled { get; private set; } = true;
+    [field: SaintsField.ReadOnly, SerializeField] public bool IsDrawingEnabled { get; private set; } = false;
 
     public event Action StartedDrawing;
     public event Action StoppedDrawing;
@@ -35,6 +35,8 @@ public class ShapeDraw : MonoBehaviour
 
     private void Awake()
     {
+        IsDrawingEnabled = false;
+
         if (sceneCamera == null)
             sceneCamera = Camera.main;
     }

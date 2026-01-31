@@ -15,6 +15,7 @@ public class InteractionSettingsAsset : ScriptableObject
     [field: SerializeField] public float HoverHeight { get; private set; } = 0.6f;
     [field: SerializeField] public float DragForce { get; private set; } = 100f;
     [field: SerializeField] public float DragDamping { get; private set; } = 10f;
+    [field: SerializeField] public bool ShouldFreezeRotation { get; private set; } = true;
     [field: SerializeField] public LayerMask NonInteractibleLayer { get; private set; }
 
     [field: Header("Rotation")]
