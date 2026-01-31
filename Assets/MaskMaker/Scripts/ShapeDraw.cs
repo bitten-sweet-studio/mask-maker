@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -17,11 +18,16 @@ public class ShapeDraw : MonoBehaviour
     [Header("Paint Mode")]
     [SerializeField] private Color currentPaintColor = Color.white;
 
-    [Header("Tool State")]
-    [SerializeField] private bool isDrawingEnabled = true;
+    [Header("Unity Events")]
+    [SerializeField] private UnityEvent onDrawing;
+    [SerializeField] private UnityEvent onStopDrawing;
 
-    public UnityEvent onDrawing;
-    public UnityEvent onStopDrawing;
+    [field: Header("Debug")]
+    [field: SaintsField.ReadOnly, SerializeField] public bool IsDrawingEnabled { get; private set; } = true;
+
+    public event Action StartedDrawing;
+    public event Action StoppedDrawing;
+
     private PaperSurface activePaperSurface;
 
     private Vector3 previousMousePosition;
@@ -40,10 +46,10 @@ public class ShapeDraw : MonoBehaviour
             Debug.Log("CancelDrawing");
             StopDrawing();
         }
-        
-        if (!isDrawingEnabled)
+
+        if (!IsDrawingEnabled)
             return;
-        
+
         if (!Input.GetMouseButton(0))
         {
             hasPreviousMousePosition = false;
@@ -142,24 +148,29 @@ public class ShapeDraw : MonoBehaviour
 
         runtimeMaskTexture.Apply();
     }
+
     public void StartDrawing()
     {
-        isDrawingEnabled = true;
+        IsDrawingEnabled = true;
+
         onDrawing.Invoke();
+        StartedDrawing?.Invoke();
     }
 
     public void StopDrawing()
     {
-        isDrawingEnabled = false;
+        IsDrawingEnabled = false;
         hasPreviousMousePosition = false; // evita linha fantasma ao voltar
+
         onStopDrawing.Invoke();
+        StoppedDrawing?.Invoke();
     }
 
     public void ToggleDrawing()
     {
-        isDrawingEnabled = !isDrawingEnabled;
+        IsDrawingEnabled = !IsDrawingEnabled;
 
-        if (!isDrawingEnabled)
+        if (!IsDrawingEnabled)
             hasPreviousMousePosition = false;
     }
 }

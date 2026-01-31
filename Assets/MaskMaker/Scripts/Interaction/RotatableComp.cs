@@ -1,17 +1,14 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class RotatableComp : MonoBehaviour
+public class RotatableComp : InteractionBaseComp
 {
-    [Header("Template Settings")]
-    [SerializeField] private bool _shouldUseGlobalSettings = true;
-    [SerializeField] private InteractionSettingsAsset _settingsTemplateOverride;
-
     [Header("Custom Settings")]
     [SerializeField] private float rotationSpeed = 2f;
     [SerializeField] private float smoothTime = 0.15f;
     [SerializeField] private bool hideCursorWhenRotating = false;
     [SerializeField] private bool _enableMagicBeyblade = false;
+    [SerializeField] private bool _enableDiscoMode = false;
 
     private float RotationSpeed => _isUsingTemplate
         ? _cachedTemplate.RotationSpeed
@@ -29,54 +26,51 @@ public class RotatableComp : MonoBehaviour
         ? _cachedTemplate.EnableMagicBeyblade
         : _enableMagicBeyblade;
 
+    private bool EnableDiscoMode => _isUsingTemplate
+        ? _cachedTemplate.EnableDiscoMode
+        : _enableDiscoMode;
+
     private bool isRotating = false;
     private Vector2 currentRotationVelocity;
     private Vector2 targetRotation;
     private Vector2 smoothRotationVelocity;
 
-    private InteractionSettingsAsset _cachedTemplate;
-    private bool _isUsingTemplate;
-
-    private void Start()
+    private void OnDisable()
     {
-        _cachedTemplate =
-            InteractionSettingsAsset.GetGlobalOrOverrideSettingsTemplate(
-                _shouldUseGlobalSettings,
-                _settingsTemplateOverride);
-        _isUsingTemplate = _cachedTemplate != null;
+        StopRotating();
+    }
+
+    private void OnMouseOver()
+    {
+        if (EnableDiscoMode) return;
+
+        HandleStartRotatingInput();
     }
 
     private void Update()
     {
-        HandleRotationInput();
+        if (EnableDiscoMode) { HandleAllRotationInput(); }
+        else { HandleStopRotatingInput(); }
 
-        if (isRotating)
-        {
-            UpdateTargetRotation();
+        if (isRotating) { UpdateTargetRotation(); }
 
-            if (!EnableMagicBeyblade)
-            {
-                ApplySmoothRotation();
-            }
-        }
-
-        if (EnableMagicBeyblade)
-        {
-            ApplySmoothRotation();
-        }
+        if (EnableMagicBeyblade || isRotating) { ApplySmoothRotation(); }
     }
 
-    private void HandleRotationInput()
+    private void HandleAllRotationInput()
     {
-        if (Input.GetMouseButtonDown(1))
-        {
-            StartRotating();
-        }
+        HandleStartRotatingInput();
+        HandleStopRotatingInput();
+    }
 
-        if (Input.GetMouseButtonUp(1))
-        {
-            StopRotating();
-        }
+    private void HandleStartRotatingInput()
+    {
+        if (Input.GetMouseButtonDown(1)) StartRotating();
+    }
+
+    private void HandleStopRotatingInput()
+    {
+        if (Input.GetMouseButtonUp(1)) StopRotating();
     }
 
     private void StartRotating()
@@ -115,7 +109,6 @@ public class RotatableComp : MonoBehaviour
 
     private void ApplySmoothRotation()
     {
-        // Smooth the rotation using SmoothDamp
         Vector2 smoothRotation = Vector2.SmoothDamp(
             Vector2.zero,
             currentRotationVelocity,
@@ -123,7 +116,6 @@ public class RotatableComp : MonoBehaviour
             SmoothTime
         );
 
-        // Apply the smoothed rotation
         if (smoothRotation.magnitude > 0.001f)
         {
             transform.Rotate(Vector3.up, -smoothRotation.x, Space.World);

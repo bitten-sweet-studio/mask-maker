@@ -1,12 +1,8 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class DraggableComp : MonoBehaviour
+public class DraggableComp : InteractionBaseComp
 {
-    [Header("Template Settings")]
-    [SerializeField] private bool _shouldUseGlobalSettings = true;
-    [SerializeField] private InteractionSettingsAsset _settingsTemplateOverride;
-
     [Header("Custom Settings")]
     [SerializeField] private float hoverHeight = 0.1f;
     [SerializeField] private float dragForce = 100f;
@@ -34,19 +30,15 @@ public class DraggableComp : MonoBehaviour
     private Rigidbody rb;
     private Collider _collider;
 
-    private InteractionSettingsAsset _cachedTemplate;
-    private bool _isUsingTemplate;
-
     private void Start()
     {
         TryGetComponent(out rb);
         TryGetComponent(out _collider);
+    }
 
-        _cachedTemplate =
-            InteractionSettingsAsset.GetGlobalOrOverrideSettingsTemplate(
-                _shouldUseGlobalSettings,
-                _settingsTemplateOverride);
-        _isUsingTemplate = _cachedTemplate != null;
+    private void OnDisable()
+    {
+        StopDragging();
     }
 
     private void OnMouseDown()
@@ -64,7 +56,7 @@ public class DraggableComp : MonoBehaviour
         isDragging = true;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, _nonInteractibleLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, NonInteractibleLayer))
         {
             dragOffset = transform.position - hit.point;
         }

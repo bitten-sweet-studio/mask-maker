@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 549c4300d1fd9bbf587c396c27eb6d0e, type: 3}
   m_Name: IS_DefaultGlobal
   m_EditorClassIdentifier: 
+  <EnableDiscoMode>k__BackingField: 0
+  <OverlayMaterial>k__BackingField: {fileID: 2100000, guid: 33757eb2887329146afb3cff7e21ded1, type: 2}
   <HoverHeight>k__BackingField: 0.5
   <DragForce>k__BackingField: 100
   <DragDamping>k__BackingField: 10
@@ -22,7 +24,7 @@ MonoBehaviour:
   <RotationSmoothTime>k__BackingField: 0.1
   <HideCursorWhenRotating>k__BackingField: 1
   <EnableMagicBeyblade>k__BackingField: 0
-  <ScaleSpeed>k__BackingField: 3
+  <ScaleSpeed>k__BackingField: 20
   <ScaleSmoothTime>k__BackingField: 0.1
   <MinScale>k__BackingField: 0.5
   <MaxScale>k__BackingField: 2

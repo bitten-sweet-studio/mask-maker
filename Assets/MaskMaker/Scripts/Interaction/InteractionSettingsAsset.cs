@@ -5,6 +5,12 @@ using UnityEngine;
         menuName = MaskMakerStatics.ScriptableObjectMenuName + "/Interaction Settings")]
 public class InteractionSettingsAsset : ScriptableObject
 {
+    [field: Header("General")]
+    [field: SerializeField] public bool EnableDiscoMode { get; private set; } = false;
+
+    [field: Header("Interactable")]
+    [field: SerializeField] public Material OverlayMaterial { get; private set; }
+
     [field: Header("Drag")]
     [field: SerializeField] public float HoverHeight { get; private set; } = 0.6f;
     [field: SerializeField] public float DragForce { get; private set; } = 100f;

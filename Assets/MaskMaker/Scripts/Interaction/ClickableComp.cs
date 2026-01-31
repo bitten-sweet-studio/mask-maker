@@ -4,17 +4,20 @@ using UnityEngine.Events;
 using SaintsField;
 
 [DisallowMultipleComponent]
-public class Interactable : MonoBehaviour
+public class ClickableComp : InteractionBaseComp
 {
-    [SerializeField]
-    private Material _overlayMaterial;
+    [Header("Custom Settings")]
+    [SerializeField] private Material _overlayMaterial;
 
-    [Header("")]
-    [Header("Events")]
-    public UnityEvent onClick;
+    [Header("Unity Events")]
+    [SerializeField] private UnityEvent onClick;
 
     [Header("Debug")]
     [ReadOnly, SerializeField] private Renderer[] renderers;
+
+    private Material OverlayMaterial => _isUsingTemplate
+        ? _cachedTemplate.OverlayMaterial
+        : _overlayMaterial;
 
     private readonly Dictionary<Renderer, Material[]> _originalMats = new();
     private bool _isHighlighted;
@@ -26,30 +29,35 @@ public class Interactable : MonoBehaviour
             renderers = GetComponentsInChildren<Renderer>(includeInactive: false);
         }
 
-
         foreach (var r in renderers)
         {
             if (!r) continue;
 
-            _originalMats[r] = r.sharedMaterials; // sharedMaterials pra evitar instanciar sem necessidade
+            _originalMats[r] = r.sharedMaterials;
         }
+    }
+
+    private void OnDisable()
+    {
+        RestoreOriginal();
     }
 
     private void OnMouseEnter()
     {
-        ApplyOverlay(_overlayMaterial);
+        if (!enabled) return;
+
+        ApplyOverlay(OverlayMaterial);
     }
 
     private void OnMouseUpAsButton()
     {
-        if (Input.GetMouseButtonUp(0))
-        {
-            Click();
-        }
+        if (Input.GetMouseButtonUp(0)) Click();
     }
 
     private void OnMouseExit()
     {
+        if (!enabled) return;
+
         RestoreOriginal();
     }
 
@@ -60,7 +68,7 @@ public class Interactable : MonoBehaviour
 
     private void ApplyOverlay(Material overlayMat)
     {
-        if (!overlayMat) return;
+        if (_isHighlighted || !overlayMat) return;
 
         foreach (var r in renderers)
         {
@@ -76,21 +84,21 @@ public class Interactable : MonoBehaviour
 
             r.sharedMaterials = newMats;
         }
+
+        _isHighlighted = true;
     }
 
     private void RestoreOriginal()
     {
+        if (!_isHighlighted) return;
+
         foreach (var kv in _originalMats)
         {
             if (!kv.Key) continue;
             kv.Key.sharedMaterials = kv.Value;
         }
-    }
 
-    private void OnDisable()
-    {
-        // Segurança: se desativar em hover, garante que não fica "preso"
-        if (_isHighlighted) RestoreOriginal();
         _isHighlighted = false;
     }
+
 }
